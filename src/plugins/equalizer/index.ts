@@ -58,7 +58,7 @@ export default createPlugin({
 
       document.addEventListener(
         'peard:audio-can-play',
-        ({ detail: { audioSource, audioContext } }) => {
+        ({ detail: { audioSource, audioContext, audioOutput } }) => {
           const filtersToApply = config.filters.concat(
             defaultPresets
               .filter((preset) => config.presets[preset])
@@ -72,7 +72,7 @@ export default createPlugin({
             biquadFilter.gain.value = filter.gain; // filter gain in dB
 
             audioSource.connect(biquadFilter);
-            biquadFilter.connect(audioContext.destination);
+            biquadFilter.connect(audioOutput);
 
             appliedFilters.push(biquadFilter);
           });

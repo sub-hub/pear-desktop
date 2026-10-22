@@ -17,6 +17,7 @@ import {
   getLoadedRendererPlugin,
   loadAllRendererPlugins,
 } from './loader/renderer';
+import { setAudioGraph } from './providers/audio-graph';
 import { startingPages } from './providers/extracted-data';
 import { setupSongInfo } from './providers/song-info-front';
 
@@ -312,7 +313,11 @@ async function onApiLoaded() {
   const video = document.querySelector('video')!;
   const audioContext = new AudioContext();
   const audioSource = audioContext.createMediaElementSource(video);
-  audioSource.connect(audioContext.destination);
+  // Shared output bus: plugins route processed audio here instead of audioContext.destination
+  const audioOutput = audioContext.createGain();
+  audioSource.connect(audioOutput);
+  audioOutput.connect(audioContext.destination);
+  setAudioGraph({ audioContext, audioSource, audioOutput });
 
   for (const [id, plugin] of Object.entries(getAllLoadedRendererPlugins())) {
     if (typeof plugin.renderer !== 'function') {
@@ -336,6 +341,7 @@ async function onApiLoaded() {
         detail: {
           audioContext,
           audioSource,
+          audioOutput,
         },
       }),
     );

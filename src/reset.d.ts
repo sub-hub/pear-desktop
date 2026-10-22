@@ -11,6 +11,11 @@ declare global {
   interface Compressor {
     audioSource: MediaElementAudioSourceNode;
     audioContext: AudioContext;
+    /**
+     * Shared output bus connected to `audioContext.destination`.
+     * Connect processed audio here instead of to the destination directly.
+     */
+    audioOutput: GainNode;
   }
 
   interface DocumentEventMap {

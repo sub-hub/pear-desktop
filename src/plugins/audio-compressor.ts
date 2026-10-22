@@ -27,6 +27,7 @@ const createCompressorNode = (
 class Storage {
   lastSource: MediaElementAudioSourceNode | null = null;
   lastContext: AudioContext | null = null;
+  lastOutput: AudioNode | null = null;
   lastCompressor: DynamicsCompressorNode | null = null;
 
   connected: WeakMap<MediaElementAudioSourceNode, DynamicsCompressorNode> =
@@ -35,29 +36,31 @@ class Storage {
   connectToCompressor = (
     source: MediaElementAudioSourceNode | null = null,
     audioContext: AudioContext | null = null,
+    output: AudioNode | null = null,
     compressor: DynamicsCompressorNode | null = null,
   ): boolean => {
-    if (!(source && audioContext && compressor)) return false;
+    if (!(source && audioContext && output && compressor)) return false;
 
     const current = this.connected.get(source);
     if (current === compressor) return false;
 
     this.lastSource = source;
     this.lastContext = audioContext;
+    this.lastOutput = output;
     this.lastCompressor = compressor;
 
     if (current) {
       lazySafeTry(
         () => source.disconnect(current),
-        () => current.disconnect(audioContext.destination),
+        () => current.disconnect(output),
       );
     } else {
-      lazySafeTry(() => source.disconnect(audioContext.destination));
+      lazySafeTry(() => source.disconnect(output));
     }
 
     try {
       source.connect(compressor);
-      compressor.connect(audioContext.destination);
+      compressor.connect(output);
       this.connected.set(source, compressor);
       return true;
     } catch (error) {
@@ -68,15 +71,15 @@ class Storage {
 
   disconnectCompressor = (): boolean => {
     const source = this.lastSource;
-    const audioContext = this.lastContext;
-    if (!(source && audioContext)) return false;
+    const output = this.lastOutput;
+    if (!(source && output)) return false;
     const current = this.connected.get(source);
     if (!current) return false;
 
     lazySafeTry(
-      () => source.connect(audioContext.destination),
+      () => source.connect(output),
       () => source.disconnect(current),
-      () => current.disconnect(audioContext.destination),
+      () => current.disconnect(output),
     );
     this.connected.delete(source);
     return true;
@@ -86,11 +89,12 @@ class Storage {
 const storage = new Storage();
 
 const audioCanPlayHandler = ({
-  detail: { audioSource, audioContext },
+  detail: { audioSource, audioContext, audioOutput },
 }: CustomEvent<Compressor>) => {
   storage.connectToCompressor(
     audioSource,
     audioContext,
+    audioOutput,
     createCompressorNode(audioContext),
   );
 };
@@ -121,6 +125,7 @@ export default createPlugin({
       storage.connectToCompressor(
         storage.lastSource,
         storage.lastContext,
+        storage.lastOutput,
         storage.lastCompressor,
       );
     },
