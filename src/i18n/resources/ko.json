@@ -600,6 +600,18 @@
       },
       "name": "인앱 메뉴"
     },
+    "loudness-normalizer": {
+      "description": "YouTube가 측정한 곡별 음량을 이용해 모든 곡을 같은 크기로 재생합니다",
+      "menu": {
+        "limiter": "클리핑 방지 (리미터)",
+        "max-boost": {
+          "label": "조용한 곡 최대 증폭",
+          "none": "없음 (큰 곡만 줄이기)"
+        },
+        "target": "목표 음량"
+      },
+      "name": "음량 노멀라이저"
+    },
     "lumiastream": {
       "description": "Lumia Stream 지원을 추가합니다",
       "name": "Lumia Stream [베타]"
