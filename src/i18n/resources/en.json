@@ -600,6 +600,18 @@
       },
       "name": "In-App Menu"
     },
+    "loudness-normalizer": {
+      "description": "Plays every track at the same loudness using the loudness YouTube measured for it",
+      "menu": {
+        "limiter": "Prevent clipping (limiter)",
+        "max-boost": {
+          "label": "Maximum boost for quiet tracks",
+          "none": "None (only lower loud tracks)"
+        },
+        "target": "Target loudness"
+      },
+      "name": "Loudness Normalizer"
+    },
     "lumiastream": {
       "description": "Adds Lumia Stream support",
       "name": "Lumia Stream [Beta]"

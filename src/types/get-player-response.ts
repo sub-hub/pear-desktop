@@ -291,6 +291,18 @@ export interface AudioConfig {
   loudnessDb: number;
   perceptualLoudnessDb: number;
   enablePerFormatLoudness: boolean;
+  /** Integrated loudness of the track (LKFS) */
+  trackAbsoluteLoudnessLkfs?: number;
+  /** Loudness the player normalizes down to (it never boosts) */
+  loudnessTargetLkfs?: number;
+  loudnessNormalizationConfig?: LoudnessNormalizationConfig;
+}
+
+export interface LoudnessNormalizationConfig {
+  applyStatefulNormalization?: boolean;
+  preserveStatefulLoudnessTarget?: boolean;
+  maxStatefulTimeThresholdSec?: number;
+  minimumLoudnessTargetLkfs?: number;
 }
 
 export interface MediaCommonConfig {
